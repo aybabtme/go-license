@@ -36,6 +36,7 @@ var (
 	fileNames = []string{
 		"copying",
 		"copyleft",
+		"copyright",
 		"license",
 		"unlicense",
 	}

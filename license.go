@@ -2,7 +2,7 @@ package license
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
@@ -122,7 +122,7 @@ func LicenseFiles() []string {
 func LicenseFilesInDir(dir string) ([]string, error) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		return nil, fmt.Errorf("error reading dir: %v", err)
+		return nil, err
 	}
 
 	var out []string
@@ -200,12 +200,12 @@ func (l *License) GuessFile(dir string) error {
 
 	switch len(files) {
 	case 0:
-		return fmt.Errorf(ErrNoLicenseFile)
+		return errors.New(ErrNoLicenseFile)
 	case 1:
 		l.File = filepath.Join(dir, files[0])
 		return nil
 	default:
-		return fmt.Errorf(ErrMultipleLicenses)
+		return errors.New(ErrMultipleLicenses)
 	}
 }
 
@@ -285,7 +285,7 @@ func (l *License) GuessType() error {
 		l.Type = LicenseUnlicense
 
 	default:
-		return fmt.Errorf(ErrUnrecognizedLicense)
+		return errors.New(ErrUnrecognizedLicense)
 	}
 
 	return nil

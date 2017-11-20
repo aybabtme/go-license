@@ -216,7 +216,7 @@ func (l *License) GuessType() error {
 		"the public domain"):
 		l.Type = LicenseUnlicense
 
-	case scan(comp, "Attribution 4.0"):
+	case scan(comp, "attribution 4.0"):
 		l.Type = LicenseCC40
 
 	default:

@@ -68,6 +68,56 @@ func TestNewFromFile(t *testing.T) {
 	}
 }
 
+func TestMITAltFromFile(t *testing.T) {
+	lf := filepath.Join("fixtures", "licenses", "MIT-alt")
+
+	lh, err := os.Open(lf)
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+	defer lh.Close()
+
+	licenseText, err := ioutil.ReadAll(lh)
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+
+	l, err := NewFromFile(lf)
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+
+	if l.Type != "MIT" {
+		t.Fatalf("unexpected license type: %s", l.Type)
+	}
+
+	if l.Text != string(licenseText) {
+		t.Fatalf("unexpected license text: %s", l.Text)
+	}
+
+	if l.File != lf {
+		t.Fatalf("unexpected file path: %s", l.File)
+	}
+
+	// Fails properly if the file doesn't exist
+	if _, err := NewFromFile("/tmp/go-license-nonexistent"); err == nil {
+		t.Fatalf("expected error loading non-existent file")
+	}
+
+	// Fails properly if license type from file is not guessable
+	f, err := ioutil.TempFile("", "go-license")
+	if err != nil {
+		t.Fatalf("err: %s", err)
+	}
+	defer f.Close()
+	defer os.Remove(f.Name())
+
+	f.WriteString("No license data")
+	if _, err := NewFromFile(f.Name()); err == nil {
+		t.Fatalf("expected error guessing license type from non-license file")
+	}
+}
+
 func TestNewFromDir(t *testing.T) {
 	d, err := ioutil.TempDir("", "go-license")
 	if err != nil {

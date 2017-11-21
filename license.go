@@ -2,6 +2,7 @@ package license
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -32,8 +33,15 @@ var (
 	// Various errors
 	ErrNoLicenseFile       = errors.New("license: unable to find any license file")
 	ErrUnrecognizedLicense = errors.New("license: could not guess license type")
-	ErrMultipleLicenses    = errors.New("license: multiple license files found")
 )
+
+type ErrMultipleLicenses struct {
+	Licenses []string
+}
+
+func (err *ErrMultipleLicenses) Error() string {
+	return fmt.Sprintf("license: multiple license files found: %v", err.Licenses)
+}
 
 // A set of reasonable license file names to use when guessing where the
 // license may be. Case does not matter.
@@ -276,6 +284,6 @@ func getLicenseFile(licenses []string, files []string) (string, error) {
 	case 1:
 		return matches[0], nil
 	default:
-		return "", ErrMultipleLicenses
+		return "", &ErrMultipleLicenses{Licenses: matches}
 	}
 }

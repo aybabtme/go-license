@@ -159,6 +159,7 @@ func (l *License) GuessType() error {
 	// them with spaces. Also replace multiple spaces with a single space to
 	// make comparison more simple.
 	comp = strings.NewReplacer(">", "").Replace(comp)
+	comp = strings.NewReplacer("*", "").Replace(comp)
 	comp = newlineRegexp.ReplaceAllLiteralString(comp, " ")
 	comp = spaceRegexp.ReplaceAllLiteralString(comp, " ")
 

@@ -26,6 +26,7 @@ func TestFixtures(t *testing.T) {
 		{filename: "MIT", expectType: "MIT"},
 		{filename: "MIT-alt", expectType: "MIT"},
 		{filename: "MIT-quoted", expectType: "MIT"},
+		{filename: "MIT-comment", expectType: "MIT"},
 		{filename: "CC-BY-4.0", expectType: "CC-BY-4.0"},
 		{filename: "BSD_3-clause", expectType: "NewBSD"},
 	}

@@ -197,7 +197,8 @@ func (l *License) GuessType() error {
 	case scan(comp, "mozilla public license") && scan(comp, "version 2.0"):
 		l.Type = LicenseMPL20
 
-	case scan(comp, "redistribution and use in source and binary forms"):
+	case scan(comp, "redistribution and use in source and binary forms") ||
+		scan(comp, "redistribution and use of this software in source and binary forms"):
 		switch {
 		case scan(comp, "neither the name of"):
 			l.Type = LicenseNewBSD

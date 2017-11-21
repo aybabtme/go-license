@@ -29,6 +29,7 @@ func TestFixtures(t *testing.T) {
 		{filename: "MIT-comment", expectType: "MIT"},
 		{filename: "CC-BY-4.0", expectType: "CC-BY-4.0"},
 		{filename: "BSD_3-clause", expectType: "NewBSD"},
+		{filename: "WTFPL", expectType: "WTFPL"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.filename, func(t *testing.T) {

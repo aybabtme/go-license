@@ -27,6 +27,7 @@ const (
 	LicenseEPL10     = "EPL-1.0"
 	LicenseUnlicense = "Unlicense"
 	LicenseCC40      = "CC-BY-4.0"
+	LicenseWTFPL     = "WTFPL"
 )
 
 var (
@@ -68,6 +69,7 @@ var KnownLicenses = []string{
 	LicenseEPL10,
 	LicenseUnlicense,
 	LicenseCC40,
+	LicenseWTFPL,
 }
 
 // License describes a software license
@@ -231,6 +233,9 @@ func (l *License) GuessType() error {
 
 	case scan(comp, "attribution 4.0"):
 		l.Type = LicenseCC40
+
+	case scan(comp, "do what the fuck you want to public license"):
+		l.Type = LicenseWTFPL
 
 	default:
 		log.Print(comp)

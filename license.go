@@ -24,6 +24,7 @@ const (
 	LicenseCDDL10    = "CDDL-1.0"
 	LicenseEPL10     = "EPL-1.0"
 	LicenseUnlicense = "Unlicense"
+	LicenseCC40      = "CC-BY-4.0"
 )
 
 var (
@@ -57,6 +58,7 @@ var KnownLicenses = []string{
 	LicenseCDDL10,
 	LicenseEPL10,
 	LicenseUnlicense,
+	LicenseCC40,
 }
 
 // License describes a software license
@@ -213,6 +215,9 @@ func (l *License) GuessType() error {
 	case scan(comp, "this is free and unencumbered software released into "+
 		"the public domain"):
 		l.Type = LicenseUnlicense
+
+	case scan(comp, "attribution 4.0"):
+		l.Type = LicenseCC40
 
 	default:
 		return ErrUnrecognizedLicense

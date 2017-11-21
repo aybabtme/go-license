@@ -173,7 +173,8 @@ func (l *License) GuessType() error {
 
 	switch {
 	case scan(comp, "permission is hereby granted, free of charge, to any "+
-		"person obtaining a copy of this software"):
+		"person obtaining a copy of this software") ||
+		scan(comp, "mit license"):
 		l.Type = LicenseMIT
 
 	case scan(comp, "permission to use, copy, modify, and/or distribute this "+

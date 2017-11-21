@@ -3,6 +3,7 @@ package license
 import (
 	"errors"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -157,6 +158,7 @@ func (l *License) GuessType() error {
 	// license, so one is not "more correct" than the other. This just replaces
 	// them with spaces. Also replace multiple spaces with a single space to
 	// make comparison more simple.
+	comp = strings.NewReplacer(">", "").Replace(comp)
 	comp = newlineRegexp.ReplaceAllLiteralString(comp, " ")
 	comp = spaceRegexp.ReplaceAllLiteralString(comp, " ")
 
@@ -221,6 +223,7 @@ func (l *License) GuessType() error {
 		l.Type = LicenseCC40
 
 	default:
+		log.Print(comp)
 		return ErrUnrecognizedLicense
 	}
 

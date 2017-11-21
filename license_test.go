@@ -18,203 +18,67 @@ func TestNewLicense(t *testing.T) {
 	}
 }
 
-func TestNewFromFile(t *testing.T) {
-	lf := filepath.Join("fixtures", "licenses", "MIT")
-
-	lh, err := os.Open(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
+func TestFixtures(t *testing.T) {
+	tests := []struct {
+		filename   string
+		expectType string
+	}{
+		{filename: "MIT", expectType: "MIT"},
+		{filename: "MIT-alt", expectType: "MIT"},
+		{filename: "MIT-quoted", expectType: "MIT"},
+		{filename: "CC-BY-4.0", expectType: "CC-BY-4.0"},
+		{filename: "BSD_3-clause", expectType: "NewBSD"},
 	}
-	defer lh.Close()
+	for _, tt := range tests {
+		t.Run(tt.filename, func(t *testing.T) {
+			lf := filepath.Join("fixtures", "licenses", tt.filename)
 
-	licenseText, err := ioutil.ReadAll(lh)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
+			lh, err := os.Open(lf)
+			if err != nil {
+				t.Fatalf("err: %s", err)
+			}
+			defer lh.Close()
 
-	l, err := NewFromFile(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
+			licenseText, err := ioutil.ReadAll(lh)
+			if err != nil {
+				t.Fatalf("err: %s", err)
+			}
 
-	if l.Type != "MIT" {
-		t.Fatalf("unexpected license type: %s", l.Type)
-	}
+			l, err := NewFromFile(lf)
+			if err != nil {
+				t.Fatalf("err: %s", err)
+			}
 
-	if l.Text != string(licenseText) {
-		t.Fatalf("unexpected license text: %s", l.Text)
-	}
+			if l.Type != tt.expectType {
+				t.Fatalf("unexpected license type: %s", l.Type)
+			}
 
-	if l.File != lf {
-		t.Fatalf("unexpected file path: %s", l.File)
-	}
+			if l.Text != string(licenseText) {
+				t.Fatalf("unexpected license text: %s", l.Text)
+			}
 
-	// Fails properly if the file doesn't exist
-	if _, err := NewFromFile("/tmp/go-license-nonexistent"); err == nil {
-		t.Fatalf("expected error loading non-existent file")
-	}
+			if l.File != lf {
+				t.Fatalf("unexpected file path: %s", l.File)
+			}
 
-	// Fails properly if license type from file is not guessable
-	f, err := ioutil.TempFile("", "go-license")
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-	defer f.Close()
-	defer os.Remove(f.Name())
+			// Fails properly if the file doesn't exist
+			if _, err := NewFromFile("/tmp/go-license-nonexistent"); err == nil {
+				t.Fatalf("expected error loading non-existent file")
+			}
 
-	f.WriteString("No license data")
-	if _, err := NewFromFile(f.Name()); err == nil {
-		t.Fatalf("expected error guessing license type from non-license file")
-	}
-}
+			// Fails properly if license type from file is not guessable
+			f, err := ioutil.TempFile("", "go-license")
+			if err != nil {
+				t.Fatalf("err: %s", err)
+			}
+			defer f.Close()
+			defer os.Remove(f.Name())
 
-func TestMITAltFromFile(t *testing.T) {
-	lf := filepath.Join("fixtures", "licenses", "MIT-alt")
-
-	lh, err := os.Open(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-	defer lh.Close()
-
-	licenseText, err := ioutil.ReadAll(lh)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	l, err := NewFromFile(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	if l.Type != "MIT" {
-		t.Fatalf("unexpected license type: %s", l.Type)
-	}
-
-	if l.Text != string(licenseText) {
-		t.Fatalf("unexpected license text: %s", l.Text)
-	}
-
-	if l.File != lf {
-		t.Fatalf("unexpected file path: %s", l.File)
-	}
-
-	// Fails properly if the file doesn't exist
-	if _, err := NewFromFile("/tmp/go-license-nonexistent"); err == nil {
-		t.Fatalf("expected error loading non-existent file")
-	}
-
-	// Fails properly if license type from file is not guessable
-	f, err := ioutil.TempFile("", "go-license")
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-	defer f.Close()
-	defer os.Remove(f.Name())
-
-	f.WriteString("No license data")
-	if _, err := NewFromFile(f.Name()); err == nil {
-		t.Fatalf("expected error guessing license type from non-license file")
-	}
-}
-
-func TestCCBY40FromFile(t *testing.T) {
-	lf := filepath.Join("fixtures", "licenses", "CreativeCommonsAttribution4_0")
-
-	lh, err := os.Open(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-	defer lh.Close()
-
-	licenseText, err := ioutil.ReadAll(lh)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	l, err := NewFromFile(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	if l.Type != "CC-BY-4.0" {
-		t.Fatalf("unexpected license type: %s", l.Type)
-	}
-
-	if l.Text != string(licenseText) {
-		t.Fatalf("unexpected license text: %s", l.Text)
-	}
-
-	if l.File != lf {
-		t.Fatalf("unexpected file path: %s", l.File)
-	}
-
-	// Fails properly if the file doesn't exist
-	if _, err := NewFromFile("/tmp/go-license-nonexistent"); err == nil {
-		t.Fatalf("expected error loading non-existent file")
-	}
-
-	// Fails properly if license type from file is not guessable
-	f, err := ioutil.TempFile("", "go-license")
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-	defer f.Close()
-	defer os.Remove(f.Name())
-
-	f.WriteString("No license data")
-	if _, err := NewFromFile(f.Name()); err == nil {
-		t.Fatalf("expected error guessing license type from non-license file")
-	}
-}
-
-func TestNewBSDFromFile(t *testing.T) {
-	lf := filepath.Join("fixtures", "licenses", "BSD_3-clause")
-
-	lh, err := os.Open(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-	defer lh.Close()
-
-	licenseText, err := ioutil.ReadAll(lh)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	l, err := NewFromFile(lf)
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-
-	if l.Type != "NewBSD" {
-		t.Fatalf("unexpected license type: %s", l.Type)
-	}
-
-	if l.Text != string(licenseText) {
-		t.Fatalf("unexpected license text: %s", l.Text)
-	}
-
-	if l.File != lf {
-		t.Fatalf("unexpected file path: %s", l.File)
-	}
-
-	// Fails properly if the file doesn't exist
-	if _, err := NewFromFile("/tmp/go-license-nonexistent"); err == nil {
-		t.Fatalf("expected error loading non-existent file")
-	}
-
-	// Fails properly if license type from file is not guessable
-	f, err := ioutil.TempFile("", "go-license")
-	if err != nil {
-		t.Fatalf("err: %s", err)
-	}
-	defer f.Close()
-	defer os.Remove(f.Name())
-
-	f.WriteString("No license data")
-	if _, err := NewFromFile(f.Name()); err == nil {
-		t.Fatalf("expected error guessing license type from non-license file")
+			f.WriteString("No license data")
+			if _, err := NewFromFile(f.Name()); err == nil {
+				t.Fatalf("expected error guessing license type from non-license file")
+			}
+		})
 	}
 }
 
